@@ -1,19 +1,25 @@
 ---
 title: "Lab 3: Reproducible report"
-author: "Nikita Makarevich 153989, Szymon Siemieniuk 151***"
+author: "Nikita Makarevich 153989, Szymon Siemieniuk 151947"
 date: "2023-04-15"
 output: 
   html_document:
     toc: true 
 ---
 
+![](PP_logotyp_ANG_CMYK.jpg)
+
+***
+***
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, fig.align='center')
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(plotly)
+library(knitr)
 
 invents = read.csv("rebrickable/inventories.csv.gz")
 
@@ -33,10 +39,11 @@ part_rels = read.csv("rebrickable/part_relationships.csv.gz")
 
 ```
 
-# **Rebrickable**. Data Exploration
+# **Rebrickable. Data Exploration**
 
-_Rebrickable_ has been so kind as to provide us with data on their inventories and all related attributes. So we decided to take some time to practice our visualization skills on real data (as well as maybe find interesting patterns in the data)
+[_Rebrickable_](https://rebrickable.com/) has been so kind as to provide us with data on their inventories and all related attributes (available [here](https://rebrickable.com/downloads/)). So we decided to take some time to practice our visualization skills on real data (as well as maybe find interesting patterns in the data)
 
+***
 
 ## History of Rebrickable with your own eyes
 
@@ -50,19 +57,27 @@ years_set_amnts = sets %>%
 years_set_amnts$num_parts_cat = 
   cut(years_set_amnts$med_num_parts, breaks=c(0, 20, 40, 60, 80, 100, +Inf))
 
-ggplot(years_set_amnts, aes(x=year, y=n, fill=factor(num_parts_cat))) +
-  geom_bar(stat="identity", color="#000000") +
+histbar = ggplot(years_set_amnts, aes(x=year, y=n, fill=factor(num_parts_cat))) +
+  geom_bar(stat="identity", color="#000000", size=0.3) +
   scale_fill_brewer(palette="YlGnBu") + 
-  stat_smooth(formula=y~x, fill=NA, alpha=0.3, size=1.3) +
+  stat_smooth(formula=y~x, fill=NA, alpha=0.3, linewidth=1.3) +
   scale_y_continuous(limits=c(0, 1250), expand=c(0,0)) +
   labs(fill="Median number \nof parts in set",
        title="Number of new sets by year",
        y="Number of sets") + 
   theme_minimal() +
-  theme(plot.title=element_text(hjust=0.5))
+  theme(plot.title=element_text(hjust=0.5, face="italic"))
+ggplotly(histbar)
 ```
+*(plot is interactive, so feel free to inspect the data at your leisure)*
 
-## *Rebrickable* doesn't see color
+As we can see, the growth in the number of released sets has been almost exponential through the years. (One possibility, however, is that many of the new sets each year are just "updated" versions of older sets - and the possibility of "update"s accumulate with years) <br />Up until about 1980 the median number of parts in sets has been quite volatile, but after that has been predominantly in the range of **`(20, 40]`**
+
+***
+
+## *Rebrickable* doesn't see <span style="color: purple;">color</span>
+
+Of course, sets are built out of parts. Luckily, *Rebrickable* divides parts into neat categories according to their use. And we wanted to check whether resources are being unnecessarily spent on diversifying colors.
 
 ```{r color_counts, echo=FALSE}
 categ_color_cnts = invent_parts %>%
@@ -72,17 +87,20 @@ categ_color_cnts = invent_parts %>%
   inner_join(part_categs, by=join_by(part_cat_id == id)) %>%
   arrange(color_cnt)
 
-splitcat = rep("middle", nrow(categ_color_cnts))
 n_best = 10
+n_total = nrow(categ_color_cnts)
+
+splitcat = rep("middle", n_total)
+
 splitcat[1:n_best] = rep(paste("Worst", n_best), n_best)
-splitcat[(66-n_best+1):66] = rep(paste("Best", n_best), n_best)
+splitcat[(n_total-n_best+1):n_total] = rep(paste("Best", n_best), n_best)
 categ_color_cnts$splitcat = splitcat
 categ_color_cnts = categ_color_cnts %>%
   filter(splitcat != "middle")
 
 bar_colors = rep(c("#225ea8", "#41b6c4"), length.out=nrow(categ_color_cnts))
 
-p = ggplot(categ_color_cnts, aes(x=factor(name, levels=name), y=color_cnt)) +
+categs_plot = ggplot(categ_color_cnts, aes(x=factor(name, levels=name), y=color_cnt)) +
   geom_bar(stat="identity", fill=bar_colors) +
   coord_flip() +
   scale_y_continuous(limits=c(0, 120), expand=c(0, 0)) +
@@ -90,10 +108,17 @@ p = ggplot(categ_color_cnts, aes(x=factor(name, levels=name), y=color_cnt)) +
   labs(y="Number of available colors",
        x="Category",
        title="Available colors for each category") +
-  theme_minimal()
-
-p
+  theme_minimal() +
+  theme(plot.title=element_text(hjust=0.5, face="italic"))
+categs_plot
 ```
+
+Unfortunately, we see that the distribution is quite logical:
+
+* Parts which are more likely to be on the outer surface - have **larger** varieties of color (e.g. `Minifig Accessories`, `Bricks`, ...)
+* Parts which are more likely to be on the inside or parts of mechanisms - have **smaller** varietes of color (e.g. `Pneumatics`, `Mechanical`, ...)
+
+***
 
 ## Top 10 Hot Themes in Your Area!! <3
 
@@ -124,17 +149,31 @@ colors = c("#081d58", "#253494", "#225ea8", "#1d91c0", "#41b6c4",
            "#7fcdbb", "#c7e9b4", "#edf8b1", "#ffffd9", "#ffffff")
 vjusts = c(3.6, 4, 3.3, 3, 3, 2, -2.5, 1.7, 1, -2)
 hjusts= c(-0.2, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-ggplot(thm_quants_fyears, aes(x=first_year, y=tot_quant,label=name)) +
+scat = ggplot(thm_quants_fyears, aes(x=first_year, y=tot_quant,label=name)) +
   geom_point(aes(size=avg_parts), fill=colors, color="black", shape=21, alpha=0.7) +
   scale_size(name="Size", range=c(5, 35)) +
   geom_point(size=1.5, color="black") +
-  geom_text(size=4, color="black", hjust=hjusts, vjust=-vjusts) +
+  geom_text(size=4, color="#525252", hjust=hjusts, vjust=-vjusts) +
   scale_x_continuous(limits=c(1980, 2025)) +
   scale_y_continuous(expand=c(0.1, 0.1)) +
   theme_minimal() +
-  theme(legend.position="none", plot.title=element_text(size=18, hjust=0.5)) +
+  theme(legend.position="none", 
+        plot.title=element_text(size=15, hjust=0.5, face="italic"),
+        plot.subtitle=element_text(color="#525252"),
+        axis.ticks.x=element_line()) +
   labs(x="Year of First Introduction",
        y="Total Quantity in Inventories",
        title="Top 10 Themes of Sets",
        subtitle="(size indicates average number of parts in set)")
+scat
 ```
+
+```{r themes_table, echo=FALSE}
+out_themes_quants = thm_quants_fyears %>%
+  select(name, avg_parts, first_year) %>%
+  rename(Theme=name, Avg_Num_Parts=avg_parts, Year_Introduced=first_year)
+
+kable(out_themes_quants)
+```
+
+*(The table was introduced due to plotly not cooperating well with the plot above)*
