@@ -11,6 +11,7 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(imager)
 
 pokedex = read.csv("data/pokemon.csv", sep="\t")
 all_types = unique(pokedex$primary_type)
@@ -41,4 +42,11 @@ shinyServer(function(input, output) {
             theme_bw()
     })
     
+    
+    output$sprite = renderUI({
+        if(is.element(input$natId, pokedex$national_number)) {
+            url = paste0("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/", input$natId, ".png")
+            tags$img(src=url)    
+        }
+    })
 })

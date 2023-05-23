@@ -11,12 +11,12 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+    includeCSS("www/darkly.min.css"),
 
     # Application title
     titlePanel("Different Normal Distributions"),
     
     tabsetPanel(
-        includeCSS("www/darkly.min.css"),
         tabPanel("Normal",
     
             # Sidebar with a slider input for number of bins
@@ -40,21 +40,33 @@ shinyUI(fluidPage(
                   )
               )
         ),
-        sidebarLayout(
-            sidebarPanel(
-                checkboxGroupInput("genPicker", "Generations:",
-                                   c("I"="I",
-                                     "II"="II",
-                                     "III"="III",
-                                     "IV"="IV",
-                                     "V"="V",
-                                     "VI"="VI",
-                                     "VII"="VII",
-                                     "VIII"="VIII"))
-            ),
-            mainPanel(
-                plotOutput("histPlot")
-            )
+        tabPanel("Pokemon Images",
+             sidebarLayout(
+                 sidebarPanel(
+                     numericInput("natId", "National ID:", 1, 1, 898, 1)
+                 ),
+                 mainPanel(
+                     htmlOutput("sprite")
+                 )
+             )
+        ),
+        tabPanel("Generations histogram",
+             sidebarLayout(
+                 sidebarPanel(
+                     checkboxGroupInput("genPicker", "Generations:",
+                                        c("I"="I",
+                                          "II"="II",
+                                          "III"="III",
+                                          "IV"="IV",
+                                          "V"="V",
+                                          "VI"="VI",
+                                          "VII"="VII",
+                                          "VIII"="VIII"))
+                 ),
+                 mainPanel(
+                     plotOutput("histPlot")
+                 )
+             )
         )
     )
 ))
