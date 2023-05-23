@@ -13,7 +13,9 @@ library(dplyr)
 library(tidyr)
 library(imager)
 
-pokedex = read.csv("data/pokemon.csv", sep="\t")
+raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
+pokedex = raw_pokedex %>%
+    select(national_number, gen, english_name, primary_type, secondary_type)
 all_types = unique(pokedex$primary_type)
 
 # Define server logic
@@ -42,11 +44,34 @@ shinyServer(function(input, output) {
             theme_bw()
     })
     
+    output$pokeTable = DT::renderDataTable({
+        pokedex
+    }, options=list(
+        scrollX=TRUE,
+        scrollY="500",
+        paging=FALSE,
+        autowidth=TRUE
+    ), selection="single"
+    )
     
     output$sprite = renderUI({
-        if(is.element(input$natId, pokedex$national_number)) {
-            url = paste0("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/", input$natId, ".png")
-            tags$img(src=url)    
+        selected = input$pokeTable_rows_selected
+        if (length(selected) > 0) {
+            natId = pokedex[selected, "national_number"]
+            url = paste0("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/", 
+                         natId, 
+                         ".png")
+            tags$img(src=url, width="50%", height="50%", class="center") 
+        }
+    })
+    
+    output$pokeDescription = renderText({
+        selected = input$pokeTable_rows_selected
+        if (length(selected) > 0) {
+            raw_pokedex[selected, "description"]
+        }
+        else {
+            "No pokemon selected!"
         }
     })
 })

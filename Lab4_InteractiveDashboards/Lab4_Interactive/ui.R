@@ -11,7 +11,16 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
-    includeCSS("www/darkly.min.css"),
+    # includeCSS("www/darkly.min.css"),
+    includeCSS("www/custom.css"),
+    tags$style(
+        HTML('
+            .dataTables_wrapper {
+            width: 100% !important;
+            max-width: none !important;
+            }
+        ')  
+    ),
 
     # Application title
     titlePanel("Different Normal Distributions"),
@@ -40,16 +49,6 @@ shinyUI(fluidPage(
                   )
               )
         ),
-        tabPanel("Pokemon Images",
-             sidebarLayout(
-                 sidebarPanel(
-                     numericInput("natId", "National ID:", 1, 1, 898, 1)
-                 ),
-                 mainPanel(
-                     htmlOutput("sprite")
-                 )
-             )
-        ),
         tabPanel("Generations histogram",
              sidebarLayout(
                  sidebarPanel(
@@ -67,6 +66,16 @@ shinyUI(fluidPage(
                      plotOutput("histPlot")
                  )
              )
+        ),
+        tabPanel("DataTable",
+            splitLayout(
+                DT::DTOutput("pokeTable"),
+                wellPanel(
+                    htmlOutput("sprite"),
+                    h3("Description:"),
+                    tags$div(textOutput("pokeDescription"), class="wrapped")
+                )
+            )
         )
     )
 ))
