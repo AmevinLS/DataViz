@@ -11,7 +11,7 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-library(imager)
+library(plotly)
 
 raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
 pokedex = raw_pokedex %>%
@@ -21,6 +21,15 @@ all_types = unique(pokedex$primary_type)
 # Define server logic
 shinyServer(function(input, output) {
 
+    curr_table = reactive({
+        brushedPoints(raw_pokedex, input$scatterBrush)
+    })
+    
+    selected_natId = reactive({
+        curr_table()[input$pokeTable_rows_selected, "national_number"]
+    })
+    
+    
     output$distPlot <- renderPlot({
 
         x = seq(0, 10, length.out=1000)
@@ -45,7 +54,7 @@ shinyServer(function(input, output) {
     })
     
     output$pokeTable = DT::renderDataTable({
-        pokedex
+        curr_table()
     }, options=list(
         scrollX=TRUE,
         scrollY="500",
@@ -55,9 +64,8 @@ shinyServer(function(input, output) {
     )
     
     output$sprite = renderUI({
-        selected = input$pokeTable_rows_selected
-        if (length(selected) > 0) {
-            natId = pokedex[selected, "national_number"]
+        natId = selected_natId()
+        if (length(natId) > 0) {
             url = paste0("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/", 
                          natId, 
                          ".png")
@@ -66,12 +74,19 @@ shinyServer(function(input, output) {
     })
     
     output$pokeDescription = renderText({
-        selected = input$pokeTable_rows_selected
-        if (length(selected) > 0) {
-            raw_pokedex[selected, "description"]
+        natId = selected_natId()
+        if (length(natId) > 0) {
+            raw_pokedex[raw_pokedex$national_number==natId, "description"]
         }
         else {
             "No pokemon selected!"
         }
+    })
+    
+    output$pokeScatter = renderPlot({
+        scatter = ggplot(raw_pokedex, aes(x=hp, y=attack, color=factor(is_legendary))) +
+            geom_point() +
+            theme_bw()
+        scatter
     })
 })

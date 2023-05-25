@@ -69,13 +69,14 @@ shinyUI(fluidPage(
         ),
         tabPanel("DataTable",
             splitLayout(
-                DT::DTOutput("pokeTable"),
+                plotOutput("pokeScatter", brush="scatterBrush"),
                 wellPanel(
                     htmlOutput("sprite"),
                     h3("Description:"),
                     tags$div(textOutput("pokeDescription"), class="wrapped")
                 )
-            )
+            ),
+            DT::DTOutput("pokeTable")
         )
     )
 ))
