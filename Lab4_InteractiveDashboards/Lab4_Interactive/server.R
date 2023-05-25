@@ -22,7 +22,9 @@ all_types = unique(pokedex$primary_type)
 shinyServer(function(input, output) {
 
     curr_table = reactive({
-        brushedPoints(raw_pokedex, input$scatterBrush)
+        brushed = brushedPoints(raw_pokedex, input$scatterBrush)
+        res = pokedex %>%
+            filter(national_number %in% brushed$national_number)
     })
     
     selected_natId = reactive({
@@ -57,7 +59,7 @@ shinyServer(function(input, output) {
         curr_table()
     }, options=list(
         scrollX=TRUE,
-        scrollY="500",
+        scrollY="130",
         paging=FALSE,
         autowidth=TRUE
     ), selection="single"
@@ -85,7 +87,7 @@ shinyServer(function(input, output) {
     
     output$pokeScatter = renderPlot({
         scatter = ggplot(raw_pokedex, aes(x=hp, y=attack, color=factor(is_legendary))) +
-            geom_point() +
+            geom_jitter(width=5, height=5) +
             theme_bw()
         scatter
     })

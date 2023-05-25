@@ -8,18 +8,9 @@
 #
 
 library(shiny)
-library(shinydashboard)
 
-shinyUI(dashboardPage(
-    dashboardHeader(title="Pokemon Stuff!"),
-    dashboardSidebar(
-        sidebarMenu(
-            menuItem("Normal", tabName="normal"),
-            menuItem("Generations Histogram", tabName="genHist"),
-            menuItem("DataTable", tabName="datatable")
-        )
-    ),
-    dashboardBody(
+# Define UI for application that draws a histogram
+shinyUI(fluidPage(
     # includeCSS("www/darkly.min.css"),
     includeCSS("www/custom.css"),
     tags$style(
@@ -30,9 +21,12 @@ shinyUI(dashboardPage(
             }
         ')  
     ),
+
+    # Application title
+    titlePanel("Different Normal Distributions"),
     
-    tabItems(
-        tabItem(tabName="normal",
+    tabsetPanel(
+        tabPanel("Normal",
     
             # Sidebar with a slider input for number of bins
             sidebarLayout(
@@ -55,7 +49,7 @@ shinyUI(dashboardPage(
                   )
               )
         ),
-        tabItem(tabName="genHist",
+        tabPanel("Generations histogram",
              sidebarLayout(
                  sidebarPanel(
                      checkboxGroupInput("genPicker", "Generations:",
@@ -73,27 +67,16 @@ shinyUI(dashboardPage(
                  )
              )
         ),
-        tabItem(tabName="datatable",
-            fluidRow(
-                box(
-                    width=8,
-                    plotOutput("pokeScatter", brush="scatterBrush"),
-                ),
-                box(
-                    width=4,
-                    title="Selected Pokemon",
-                    wellPanel(
-                        htmlOutput("sprite"),
-                        tags$div(textOutput("pokeDescription"), class="wrapped")
-                    )
+        tabPanel("DataTable",
+            splitLayout(
+                plotOutput("pokeScatter", brush="scatterBrush"),
+                wellPanel(
+                    htmlOutput("sprite"),
+                    h3("Description:"),
+                    tags$div(textOutput("pokeDescription"), class="wrapped")
                 )
             ),
-            box(
-                width=12,
-                title="Pokemon in highlighted area",
-                DT::DTOutput("pokeTable")
-            )
+            DT::DTOutput("pokeTable")
         )
-    )
     )
 ))
