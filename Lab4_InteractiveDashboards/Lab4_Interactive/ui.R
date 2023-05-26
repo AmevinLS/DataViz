@@ -77,7 +77,8 @@ shinyUI(dashboardPage(
             fluidRow(
                 box(
                     width=8,
-                    plotOutput("pokeScatter", brush="scatterBrush"),
+                    # plotOutput("pokeScatter", brush="scatterBrush"),
+                    plotlyOutput("pokeScatter")
                 ),
                 box(
                     width=4,
@@ -90,7 +91,7 @@ shinyUI(dashboardPage(
             ),
             box(
                 width=12,
-                title="Pokemon in highlighted area",
+                title="Pokemon inside selection",
                 DT::DTOutput("pokeTable")
             )
         )

@@ -21,10 +21,23 @@ all_types = unique(pokedex$primary_type)
 # Define server logic
 shinyServer(function(input, output) {
 
+    # event_register(p="pokeScatter", event="plotly_brushed")
+    
     curr_table = reactive({
-        brushed = brushedPoints(raw_pokedex, input$scatterBrush)
-        res = pokedex %>%
-            filter(national_number %in% brushed$national_number)
+        # brushed = brushedPoints(raw_pokedex, input$scatterBrush)
+        # res = pokedex %>%
+        #     filter(national_number %in% brushed$national_number)
+        selected = event_data(event="plotly_selected", source="S", priority="event")
+        print(selected)
+        if(!is.null(selected)) {
+            selected_data = raw_pokedex[selected$pointNumber, ]
+            res = pokedex %>%
+                filter(national_number %in% selected_data$national_number)
+        } else {
+            res = NULL
+        }
+        
+        res
     })
     
     selected_natId = reactive({
@@ -85,10 +98,12 @@ shinyServer(function(input, output) {
         }
     })
     
-    output$pokeScatter = renderPlot({
+    output$pokeScatter = renderPlotly({
         scatter = ggplot(raw_pokedex, aes(x=hp, y=attack, color=factor(is_legendary))) +
             geom_jitter(width=5, height=5) +
             theme_bw()
-        scatter
+        # plot_ly(data=raw_pokedex, x=~hp, y=~attack, color=~is_legendary,
+        #         type="scatter", mode="markers")
+        ggplotly(scatter, source="S")
     })
 })
