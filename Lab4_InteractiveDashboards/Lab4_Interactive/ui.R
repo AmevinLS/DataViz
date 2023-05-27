@@ -9,8 +9,9 @@
 
 library(shiny)
 library(shinydashboard)
+library(plotly)
 
-shinyUI(dashboardPage(
+shinyUI(dashboardPage(skin="black",
     dashboardHeader(title="Pokemon Stuff!"),
     dashboardSidebar(
         sidebarMenu(
@@ -77,15 +78,20 @@ shinyUI(dashboardPage(
             fluidRow(
                 box(
                     width=8,
-                    # plotOutput("pokeScatter", brush="scatterBrush"),
+                    height="45vh",
                     plotlyOutput("pokeScatter")
                 ),
-                box(
-                    width=4,
-                    title="Selected Pokemon",
-                    wellPanel(
-                        htmlOutput("sprite"),
-                        tags$div(textOutput("pokeDescription"), class="wrapped")
+                fluidRow(
+                    box(
+                        width=4,
+                        height="45vh",
+                        title="Selected Pokemon",
+                        wellPanel(
+                            htmlOutput("sprite"),
+                            tags$div(textOutput("pokeDescription"), 
+                                     class="poke-desctiption",
+                                     height="45vh")
+                        )
                     )
                 )
             ),
