@@ -7,6 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
+library(plotly)
 library(shiny)
 library(shinydashboard)
 library(plotly)
@@ -17,7 +18,8 @@ shinyUI(dashboardPage(skin="black",
         sidebarMenu(
             menuItem("Normal", tabName="normal"),
             menuItem("Generations Histogram", tabName="genHist"),
-            menuItem("DataTable", tabName="datatable")
+            menuItem("DataTable", tabName="datatable"),
+            menuItem("Compare types", tabName="typeComparer")
         )
     ),
     dashboardBody(
@@ -100,7 +102,34 @@ shinyUI(dashboardPage(skin="black",
                 title="Pokemon inside selection",
                 DT::DTOutput("pokeTable")
             )
+        ),
+        tabItem(tabName="typeComparer",
+                sidebarLayout(
+                  sidebarPanel(
+                    checkboxGroupInput("typePicker", "Choose types:",
+                                       c("grass"="grass",
+                                         "fire"="fire",
+                                         "water"="water",
+                                         "bug"="bug",
+                                         "normal"="normal",
+                                         "poison"="poison",
+                                         "electric"="electric",
+                                         "ground"="ground",
+                                         "fairy"="fairy",
+                                         "fighting"="fighting",
+                                         "psychic"="psychic",
+                                         "rock"="rock",
+                                         "ghost"="ghost",
+                                         "ice"="ice",
+                                         "dragon"="dragon",
+                                         "dark"="dark",
+                                         "steel"="steel",
+                                         "flying"="flying"))
+                  ),
+                  mainPanel(
+                    plotlyOutput("linePlot")
+                  )
+              )
         )
     )
-    )
-))
+)))
