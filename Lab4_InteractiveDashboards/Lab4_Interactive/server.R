@@ -89,7 +89,7 @@ shinyServer(function(input, output) {
         curr_table()
     }, options=list(
         scrollX=TRUE,
-        scrollY="150",
+        scrollY="300",
         paging=FALSE,
         autowidth=TRUE
     ), selection="single"

@@ -22,6 +22,10 @@
     background-color: #f8f9fa;
 }
 
+.poke-well-panel {
+    background-color: #0C134F;
+}
+
 .poke-name {
     font-size: 23px;
     font-weight: bold;
