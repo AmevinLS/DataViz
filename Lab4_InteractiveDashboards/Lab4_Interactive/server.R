@@ -81,16 +81,20 @@ shinyServer(function(input, output) {
     
     output$linePlot = renderPlotly({
       types = input$typePicker
-      chosen_types = df_types_stats %>%
-        filter(primary_type %in% types)
-      
-      ggplotly(ggplot(chosen_types, aes(x=feature, y=value, group=primary_type)) +
-        geom_point() +
-        geom_line() +
-        expand_limits(y=0) +
-        labs(title="Comparing types w.r.t. their mean features") +
-        theme_bw()
-    )})
+      if (length(types) == 0) {
+        ggplotly()
+      } else {
+        chosen_types = df_types_stats %>%
+          filter(primary_type %in% types)
+        
+        ggplotly(ggplot(chosen_types, aes(x=feature, y=value, group=primary_type)) +
+          geom_point(aes(color=primary_type)) +
+          geom_line(linewidth=0.1, linetype="dotted") +
+          expand_limits(y=0) +
+          labs(title="Comparing types w.r.t. their mean features") +
+          theme_bw()
+        )
+      }})
     
     output$pokeTable = DT::renderDataTable({
         curr_table()
