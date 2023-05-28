@@ -79,10 +79,10 @@ shinyServer(function(input, output) {
             filter(gen %in% gens)
         
         g <- ggplot(chosen_poke, aes(x=type)) +
-          geom_bar() +
+          geom_bar(fill='#00c5c7') +
           scale_x_discrete(limits=all_types) +
           coord_flip() +
-          geom_text(stat='count', aes(label=..count..), vjust=1) +
+          geom_text(stat='count', aes(label=after_stat(count)), vjust=1) +
           labs(title="Histogram of all generations") +
           theme_bw()
         
