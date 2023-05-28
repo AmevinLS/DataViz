@@ -17,8 +17,8 @@ library(scales)
 raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
 raw_pokedex = raw_pokedex %>%
     mutate(is_legendary=if_else(is_legendary==1, "Yes", "No"),
-           is_legendary=if_else(is_mythical==1, "Yes", "No"),
-           is_legendary=if_else(is_sublegendary==1, "Yes", "No"))
+           is_mythical=if_else(is_mythical==1, "Yes", "No"),
+           is_sublegendary=if_else(is_sublegendary==1, "Yes", "No"))
 scatter_pokedex = raw_pokedex %>%
     select(everything())
 pokedex = raw_pokedex %>%
