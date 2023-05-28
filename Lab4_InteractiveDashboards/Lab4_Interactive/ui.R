@@ -12,7 +12,7 @@ library(shiny)
 library(shinydashboard)
 library(plotly)
 
-scatterplot_height = "55vh"
+scatterplot_height = "59vh"
 x_choices = c("hp", "attack", "defense", "sp_attack", "sp_defense", "speed")
 y_choices = x_choices
 hue_choices = c("is_legendary", "is_sublegendary", "is_mythical", "gen")
@@ -77,6 +77,7 @@ shinyUI(dashboardPage(skin="black",
             fluidRow(
                 box(
                     width=8,
+                    title="Pokemon scatterplot",
                     height=scatterplot_height,
                     plotlyOutput("pokeScatter")
                 ),
@@ -85,7 +86,7 @@ shinyUI(dashboardPage(skin="black",
                         width=4,
                         background="navy",
                         height=scatterplot_height,
-                        title="Selected Pokemon",
+                        title="Selected Pokemon (from table)",
                         wellPanel(
                             class="poke-well-panel",
                             tags$div(class="poke-name", textOutput("pokeName")),
@@ -97,7 +98,7 @@ shinyUI(dashboardPage(skin="black",
             ),
             box(
                 width=12,
-                title="Pokemon inside selection",
+                title="Pokemon inside selection (use Box-select or Lasso-select in scatter)",
                 DT::DTOutput("pokeTable")
             )
         ),

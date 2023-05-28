@@ -22,7 +22,8 @@ raw_pokedex = raw_pokedex %>%
 scatter_pokedex = raw_pokedex %>%
     select(everything())
 pokedex = raw_pokedex %>%
-    select(national_number, gen, english_name, primary_type, secondary_type)
+    select(national_number, gen, english_name, primary_type, secondary_type, 
+           abilities_0, abilities_1)
 all_types = unique(pokedex$primary_type)
 
 df_types_stats <- raw_pokedex %>% 
