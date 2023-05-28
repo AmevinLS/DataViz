@@ -20,12 +20,17 @@ pokedex = raw_pokedex %>%
 all_types = unique(pokedex$primary_type)
 
 df_types_stats <- raw_pokedex %>% 
-  select(c('primary_type', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense'))
+  select(c('gen', 'primary_type', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense'))
 
 df_types_stats_2 <- raw_pokedex %>% 
-  select(c('secondary_type', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense')) %>%
+  select(c('gen', 'secondary_type', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense')) %>%
   filter(secondary_type != '') %>%
   rename(primary_type = secondary_type)
+
+df_hist <- df_types_stats %>%
+  union_all(df_types_stats_2) %>%
+  select(c('gen', 'primary_type')) %>%
+  rename(type=primary_type)
 
 df_types_stats <- df_types_stats %>%
   union_all(df_types_stats_2) %>%
@@ -68,15 +73,20 @@ shinyServer(function(input, output) {
 
     })
 
-    output$histPlot = renderPlot({
+    output$histPlot = renderPlotly({
         gens = input$genPicker
-        chosen_poke = pokedex %>%
+        chosen_poke = df_hist %>%
             filter(gen %in% gens)
         
-        ggplot(chosen_poke, aes(x=primary_type)) +
-            geom_bar() +
-            scale_x_discrete(limits=all_types) +
-            theme_bw()
+        g <- ggplot(chosen_poke, aes(x=type)) +
+          geom_bar() +
+          scale_x_discrete(limits=all_types) +
+          coord_flip() +
+          geom_text(stat='count', aes(label=..count..), vjust=1) +
+          labs(title="Histogram of all generations") +
+          theme_bw()
+        
+        ggplotly(g)
     })
     
     output$linePlot = renderPlotly({
@@ -87,13 +97,18 @@ shinyServer(function(input, output) {
         chosen_types = df_types_stats %>%
           filter(primary_type %in% types)
         
-        ggplotly(ggplot(chosen_types, aes(x=feature, y=value, group=primary_type)) +
+        g <- ggplot(chosen_types, 
+                    aes(x=feature, 
+                        y=value, 
+                        group=primary_type,
+                        text=paste(feature, ": ", round(value, 2), "\n", primary_type, sep=''))) +
           geom_point(aes(color=primary_type)) +
           geom_line(linewidth=0.1, linetype="dotted") +
           expand_limits(y=0) +
-          labs(title="Comparing types w.r.t. their mean features") +
+          labs(title="Comparing mean features w.r.t. types") +
           theme_bw()
-        )
+        
+        ggplotly(g, tooltip="text")
       }})
     
     output$pokeTable = DT::renderDataTable({

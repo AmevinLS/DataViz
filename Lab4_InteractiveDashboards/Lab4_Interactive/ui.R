@@ -72,7 +72,7 @@ shinyUI(dashboardPage(skin="black",
                                           "VIII"="VIII"))
                  ),
                  mainPanel(
-                     plotOutput("histPlot")
+                     plotlyOutput("histPlot")
                  )
              )
         ),
@@ -122,8 +122,8 @@ shinyUI(dashboardPage(skin="black",
                                          "normal"="normal",
                                          "poison"="poison",
                                          "psychic"="psychic",
-                                         "steel"="steel",
                                          "rock"="rock",
+                                         "steel"="steel",
                                          "water"="water"))
                   ),
                   mainPanel(
