@@ -15,6 +15,12 @@ library(plotly)
 library(scales)
 
 raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
+raw_pokedex = raw_pokedex %>%
+    mutate(is_legendary=if_else(is_legendary==1, "Yes", "No"),
+           is_legendary=if_else(is_mythical==1, "Yes", "No"),
+           is_legendary=if_else(is_sublegendary==1, "Yes", "No"))
+scatter_pokedex = raw_pokedex %>%
+    select(everything())
 pokedex = raw_pokedex %>%
     select(national_number, gen, english_name, primary_type, secondary_type)
 all_types = unique(pokedex$primary_type)
@@ -91,12 +97,12 @@ shinyServer(function(input, output) {
         labs(title="Comparing types w.r.t. their mean features") +
         theme_bw()
     )})
-    
+
     output$pokeTable = DT::renderDataTable({
         curr_table()
     }, options=list(
         scrollX=TRUE,
-        scrollY="130",
+        scrollY="150",
         paging=FALSE,
         autowidth=TRUE
     ), selection="single"
@@ -123,9 +129,10 @@ shinyServer(function(input, output) {
     })
     
     output$pokeScatter = renderPlotly({
-        scatter = ggplot(raw_pokedex, aes(x=hp, y=attack, color=factor(is_legendary))) +
+        scatter = ggplot(scatter_pokedex, aes_string(x=input$x_axis, y=input$y_axis, color=input$hue)) +
             geom_jitter(width=5, height=5) +
             theme_bw()
-        ggplotly(scatter, source="S")
+        scatter = ggplotly(scatter, source="S")
+        scatter
     })
 })

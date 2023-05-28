@@ -12,17 +12,38 @@ library(shiny)
 library(shinydashboard)
 library(plotly)
 
+datatable_plot_height = "55vh"
+x_choices = c("hp", "attack", "defense", "sp_attack", "sp_defense", "speed")
+y_choices = x_choices
+hue_choices = c("is_legendary", "is_sublegendary", "is_mythical", "gen")
+x_selected = "hp"
+y_selected = "attack"
+hue_selected = "is_legendary"
+
 shinyUI(dashboardPage(skin="black",
     dashboardHeader(title="Pokemon Stuff!"),
     dashboardSidebar(
         sidebarMenu(
             menuItem("Normal", tabName="normal"),
             menuItem("Generations Histogram", tabName="genHist"),
-            menuItem("DataTable", tabName="datatable"),
+            menuItem("Pokemon picker", tabName="pokemon_picker",
+                     menuItem("Datatable", tabName="datatable"),
+                     menuItem("Paremeters", tabName="parameters",
+                              selectInput("x_axis", "X Axis", 
+                                          choice=x_choices,
+                                          selected=x_selected),
+                              selectInput("y_axis", "Y Axis",
+                                          choice=y_choices,
+                                          selected=y_selected),
+                              selectInput("hue", "Hue",
+                                          choice=hue_choices,
+                                          selected=hue_selected)
+                    )
+            ),
             menuItem("Compare types", tabName="typeComparer")
         )
     ),
-    dashboardBody(
+    dashboardBody(class="custom-dashboard-body",
     # includeCSS("www/darkly.min.css"),
     includeCSS("www/custom.css"),
     tags$style(
@@ -80,19 +101,17 @@ shinyUI(dashboardPage(skin="black",
             fluidRow(
                 box(
                     width=8,
-                    height="45vh",
+                    height=datatable_plot_height,
                     plotlyOutput("pokeScatter")
                 ),
                 fluidRow(
                     box(
                         width=4,
-                        height="45vh",
+                        height=datatable_plot_height,
                         title="Selected Pokemon",
                         wellPanel(
                             htmlOutput("sprite"),
-                            tags$div(textOutput("pokeDescription"), 
-                                     class="poke-desctiption",
-                                     height="45vh")
+                            textOutput("pokeDescription")
                         )
                     )
                 )
