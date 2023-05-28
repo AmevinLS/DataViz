@@ -60,19 +60,6 @@ shinyServer(function(input, output) {
     selected_natId = reactive({
         curr_table()[input$pokeTable_rows_selected, "national_number"]
     })
-    
-    
-    output$distPlot <- renderPlot({
-
-        x = seq(0, 10, length.out=1000)
-        dist_val = dnorm(x, mean=input$mean, sd=input$std)
-        data = data.frame(x, dist_val)
-        
-        ggplot(data, aes(x=x, y=dist_val)) +
-          geom_line() +
-          theme_bw()
-
-    })
 
     output$histPlot = renderPlot({
         gens = input$genPicker
@@ -108,6 +95,16 @@ shinyServer(function(input, output) {
     ), selection="single"
     )
     
+    output$pokeName = renderText({
+        natId = selected_natId()
+        if (length(natId) > 0) {
+            raw_pokedex[raw_pokedex$national_number==natId, "english_name"]
+        }
+        else {
+            ""
+        }
+    })
+    
     output$sprite = renderUI({
         natId = selected_natId()
         if (length(natId) > 0) {
@@ -129,10 +126,10 @@ shinyServer(function(input, output) {
     })
     
     output$pokeScatter = renderPlotly({
-        scatter = ggplot(scatter_pokedex, aes_string(x=input$x_axis, y=input$y_axis, color=input$hue)) +
+        scatter = ggplot(scatter_pokedex, aes_string(x=input$x_axis, y=input$y_axis, color=input$hue, text="english_name")) +
             geom_jitter(width=5, height=5) +
             theme_bw()
-        scatter = ggplotly(scatter, source="S")
+        scatter = ggplotly(scatter, source="S")#, tooltip=c("text", "x", "y", "color"))
         scatter
     })
 })

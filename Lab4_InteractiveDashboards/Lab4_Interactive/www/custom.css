@@ -21,3 +21,13 @@
     overflow-x: hidden !important;
     background-color: #f8f9fa;
 }
+
+.poke-name {
+    font-size: 23px;
+    font-weight: bold;
+    text-align: center;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}

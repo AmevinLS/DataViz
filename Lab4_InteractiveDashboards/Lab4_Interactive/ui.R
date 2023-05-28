@@ -24,7 +24,6 @@ shinyUI(dashboardPage(skin="black",
     dashboardHeader(title="Pokemon Stuff!"),
     dashboardSidebar(
         sidebarMenu(
-            menuItem("Normal", tabName="normal"),
             menuItem("Generations Histogram", tabName="genHist"),
             menuItem("Pokemon picker", tabName="pokemon_picker",
                      menuItem("Datatable", tabName="datatable"),
@@ -56,29 +55,6 @@ shinyUI(dashboardPage(skin="black",
     ),
     
     tabItems(
-        tabItem(tabName="normal",
-    
-            # Sidebar with a slider input for number of bins
-            sidebarLayout(
-                  sidebarPanel(
-                      sliderInput("mean",
-                                  "mean:",
-                                  min = 1,
-                                  max = 10,
-                                  value = 5,
-                                  step = 0.01),
-                      sliderInput("std",
-                                  "std:",
-                                  min=0.1,
-                                  max=5,
-                                  value=1,
-                                  step=0.01)
-                  ),
-                  mainPanel(
-                      plotOutput("distPlot")
-                  )
-              )
-        ),
         tabItem(tabName="genHist",
              sidebarLayout(
                  sidebarPanel(
@@ -110,6 +86,7 @@ shinyUI(dashboardPage(skin="black",
                         height=datatable_plot_height,
                         title="Selected Pokemon",
                         wellPanel(
+                            tags$div(class="poke-name", textOutput("pokeName")),
                             htmlOutput("sprite"),
                             textOutput("pokeDescription")
                         )
