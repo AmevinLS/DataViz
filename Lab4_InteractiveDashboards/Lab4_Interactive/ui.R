@@ -19,7 +19,8 @@ shinyUI(dashboardPage(skin="black",
             menuItem("Normal", tabName="normal"),
             menuItem("Generations Histogram", tabName="genHist"),
             menuItem("DataTable", tabName="datatable"),
-            menuItem("Compare types", tabName="typeComparer")
+            menuItem("Compare types", tabName="typeComparer"),
+            menuItem("Questionaire", tabName="questionaire")
         )
     ),
     dashboardBody(
@@ -61,7 +62,7 @@ shinyUI(dashboardPage(skin="black",
         tabItem(tabName="genHist",
              sidebarLayout(
                  sidebarPanel(
-                     checkboxGroupInput("genPicker", "Generations:",
+                     checkboxGroupInput("genPicker", "Choose generations:",
                                         c("I"="I",
                                           "II"="II",
                                           "III"="III",
@@ -130,6 +131,18 @@ shinyUI(dashboardPage(skin="black",
                     plotlyOutput("linePlot")
                   )
               )
-        )
+        ),
+        tabItem(tabName="questionaire",
+                sidebarLayout(
+                  sidebarPanel(
+                    radioButtons("topBot", "Mode:", c("top"="top",
+                                                      "bot"="bottom")),
+                    selectInput("attrib", "Attribute:", c('health'='hp',
+                                                          'gaga'='lada'))
+                  ),
+                  mainPanel(
+                    
+                  )
+                )
     )
-)))
+))))

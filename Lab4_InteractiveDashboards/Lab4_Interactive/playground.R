@@ -13,3 +13,6 @@ pokedex[national_number==3, "english_name"]
 
 length(pokedex[c(), "national_number"])
 pokedex[c(), "national_number"]
+
+all_types = unique(pokedex$primary_type)
+all_types

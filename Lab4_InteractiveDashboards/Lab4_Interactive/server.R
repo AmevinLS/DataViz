@@ -40,6 +40,8 @@ df_types_stats <- df_types_stats %>%
                names_to='feature',
                values_to='value')
 
+# View(raw_pokedex)
+
 # Define server logic
 shinyServer(function(input, output) {
     
@@ -110,6 +112,10 @@ shinyServer(function(input, output) {
         
         ggplotly(g, tooltip="text")
       }})
+    
+    output$pokemonsList = renderText({
+      "Hello world!"
+    })
     
     output$pokeTable = DT::renderDataTable({
         curr_table()
