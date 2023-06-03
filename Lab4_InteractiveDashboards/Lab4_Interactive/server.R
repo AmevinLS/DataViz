@@ -19,10 +19,11 @@ pokedex = raw_pokedex %>%
     select(national_number, gen, english_name, primary_type, secondary_type)
 all_types = unique(pokedex$primary_type)
 
-View(raw_pokedex)
-
 df_pokemons <- raw_pokedex %>%
-  select(c('english_name', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense', 'weight_kg'))
+  select(c('english_name', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense', 'weight_kg')) %>%
+  rename('name'='english_name', 'weight (kg)'='weight_kg', 'speed defense'='sp_defense', 'speed attack'='sp_attack')
+
+View(df_pokemons)
 
 df_types_stats <- raw_pokedex %>% 
   select(c('gen', 'primary_type', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense'))
@@ -128,13 +129,13 @@ shinyServer(function(input, output) {
       attrib <- input$attrib
       
       df_subset <- df_pokemons %>%
-        select(c('english_name', attrib)) %>%
+        select(c('name', !!sym(attrib))) %>%
         arrange(!!sym(attrib))
       
       if (sorter == 'top') {
-        df_subset %>% top_n(10)
+        df_subset %>% top_n(input$n) %>% arrange(desc(!!sym(attrib)))
       } else {
-        df_subset %>% top_n(-10)
+        df_subset %>% top_n(-input$n)
       }
     })
     

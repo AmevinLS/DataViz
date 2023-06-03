@@ -111,17 +111,19 @@ shinyUI(dashboardPage(skin="black",
         tabItem(tabName="questionaire",
                 sidebarLayout(
                   sidebarPanel(
-                    radioButtons("topBot", "Mode:", c("top 10"="top",
-                                                      "bottom 10"="bottom")),
+                    radioButtons("topBot", "Mode:", c("top N pokemons"="top",
+                                                      "bottom N pokemons"="bottom")),
+                    numericInput("n", "N", value=10, min=1, max=900, step=1),
                     selectInput("attrib", "Attribute:", c('health'='hp',
                                                           'attack'='attack',
                                                           'speed'='speed',
                                                           'defense'='defense',
-                                                          'speed attack'='sp_attack',
-                                                          'speed defense'='sp_defense', 
-                                                          'weight'='weight_kg'))
+                                                          'speed attack'='speed attack',
+                                                          'speed defense'='speed defense', 
+                                                          'weight'='weight (kg)'))
                   ),
                   mainPanel(
+                    style = "height: 90vh; overflow-y: auto;",
                     tableOutput('tabList')
                   )
                 )
