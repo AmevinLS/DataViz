@@ -39,7 +39,8 @@ shinyUI(dashboardPage(skin="black",
                                           selected=hue_selected)
                     )
             ),
-            menuItem("Compare types", tabName="typeComparer")
+            menuItem("Compare types", tabName="typeComparer"),
+            menuItem("Build Your Team", tabName="teamBuilder")
         )
     ),
     dashboardBody(class="custom-dashboard-body",
@@ -129,6 +130,24 @@ shinyUI(dashboardPage(skin="black",
                     plotlyOutput("linePlot")
                   )
               )
+        ),
+        tabItem(tabName="teamBuilder",
+            fluidPage(
+                splitLayout(
+                    box(
+                        title="Available Pokemon",
+                        width=12,
+                        DT::DTOutput("pokePickerTable"),
+                        actionButton("addToTeamButton", "Add to Team"),
+                    ),
+                    box(
+                        title="Current Team (max 6 members)",
+                        width=12,
+                        DT::DTOutput("pokeTeamTable"),
+                        actionButton("removeFromTeamButton", "Remove from Team")
+                    )
+                )
+            )
         )
     )
 )))

@@ -133,4 +133,52 @@ shinyServer(function(input, output) {
         scatter = ggplotly(scatter, source="S")#, tooltip=c("text", "x", "y", "color"))
         scatter
     })
+    
+    
+    ### TeamBuilder Tab
+    
+    cols_for_team = c("national_number", "gen", "english_name")
+    pokedex_for_team = raw_pokedex %>%
+        select(one_of(cols_for_team))
+    
+    curr_team = reactiveVal(
+        pokedex_for_team %>%
+            filter(FALSE)
+    )
+    
+    
+    observeEvent(input$addToTeamButton, {
+        if (nrow(curr_team()) < 6) {
+            new_pokemon = pokedex_for_team[input$pokePickerTable_rows_selected, ]
+            new_team = rbind(curr_team(), new_pokemon)
+            curr_team(new_team)
+        }        
+    })    
+    
+    observeEvent(input$removeFromTeamButton, {
+        selected_member = input$pokeTeamTable_rows_selected
+        new_team = curr_team()[-selected_member, ]
+        curr_team(new_team)
+    })
+    
+    
+    output$pokePickerTable = DT::renderDataTable({
+        res = raw_pokedex %>%
+            select(national_number, gen, english_name)
+        res
+    }, options=list(
+        scrollX=TRUE,
+        scrollY="300",
+        paging=FALSE,
+        autowidth=TRUE
+    ), selection="single")
+    
+    output$pokeTeamTable = DT::renderDataTable({
+        curr_team()
+    }, options=list(
+        scrollX=TRUE,
+        scrollY="300",
+        paging=FALSE,
+        autowidth=TRUE
+    ), selection="single")
 })
