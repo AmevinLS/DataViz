@@ -133,18 +133,30 @@ shinyUI(dashboardPage(skin="black",
         ),
         tabItem(tabName="teamBuilder",
             fluidPage(
-                splitLayout(
+                column(
+                    width=4,
                     box(
                         title="Available Pokemon",
                         width=12,
                         DT::DTOutput("pokePickerTable"),
                         actionButton("addToTeamButton", "Add to Team"),
-                    ),
+                    )
+                ),
+                column(
+                    width=4,
                     box(
                         title="Current Team (max 6 members)",
                         width=12,
                         DT::DTOutput("pokeTeamTable"),
                         actionButton("removeFromTeamButton", "Remove from Team")
+                    )
+                ),
+                column(
+                    width=4,
+                    box(
+                        title="Pokemon type distribution",
+                        width=12,
+                        plotlyOutput("teamTypePiechart")
                     )
                 )
             )
