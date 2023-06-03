@@ -12,17 +12,38 @@ library(shiny)
 library(shinydashboard)
 library(plotly)
 
+scatterplot_height = "59vh"
+x_choices = c("hp", "attack", "defense", "sp_attack", "sp_defense", "speed")
+y_choices = x_choices
+hue_choices = c("is_legendary", "is_sublegendary", "is_mythical", "gen")
+x_selected = "hp"
+y_selected = "attack"
+hue_selected = "is_legendary"
+
 shinyUI(dashboardPage(skin="black",
     dashboardHeader(title="Pokemon Stuff!"),
     dashboardSidebar(
         sidebarMenu(
-            menuItem("Normal", tabName="normal"),
             menuItem("Generations Histogram", tabName="genHist"),
-            menuItem("DataTable", tabName="datatable"),
-            menuItem("Compare types", tabName="typeComparer")
+            menuItem("Pokemon picker", tabName="pokemon_picker",
+                     menuItem("Datatable", tabName="datatable"),
+                     menuItem("Paremeters", tabName="parameters",
+                              selectInput("x_axis", "X Axis", 
+                                          choice=x_choices,
+                                          selected=x_selected),
+                              selectInput("y_axis", "Y Axis",
+                                          choice=y_choices,
+                                          selected=y_selected),
+                              selectInput("hue", "Hue",
+                                          choice=hue_choices,
+                                          selected=hue_selected)
+                    )
+            ),
+            menuItem("Compare types", tabName="typeComparer"),
+            menuItem("Build Your Team", tabName="teamBuilder")
         )
     ),
-    dashboardBody(
+    dashboardBody(class="custom-dashboard-body",
     # includeCSS("www/darkly.min.css"),
     includeCSS("www/custom.css"),
     tags$style(
@@ -35,29 +56,6 @@ shinyUI(dashboardPage(skin="black",
     ),
     
     tabItems(
-        tabItem(tabName="normal",
-    
-            # Sidebar with a slider input for number of bins
-            sidebarLayout(
-                  sidebarPanel(
-                      sliderInput("mean",
-                                  "mean:",
-                                  min = 1,
-                                  max = 10,
-                                  value = 5,
-                                  step = 0.01),
-                      sliderInput("std",
-                                  "std:",
-                                  min=0.1,
-                                  max=5,
-                                  value=1,
-                                  step=0.01)
-                  ),
-                  mainPanel(
-                      plotOutput("distPlot")
-                  )
-              )
-        ),
         tabItem(tabName="genHist",
              sidebarLayout(
                  sidebarPanel(
@@ -80,26 +78,28 @@ shinyUI(dashboardPage(skin="black",
             fluidRow(
                 box(
                     width=8,
-                    height="45vh",
+                    title="Pokemon scatterplot",
+                    height=scatterplot_height,
                     plotlyOutput("pokeScatter")
                 ),
                 fluidRow(
                     box(
                         width=4,
-                        height="45vh",
-                        title="Selected Pokemon",
+                        background="navy",
+                        height=scatterplot_height,
+                        title="Selected Pokemon (from table)",
                         wellPanel(
+                            class="poke-well-panel",
+                            tags$div(class="poke-name", textOutput("pokeName")),
                             htmlOutput("sprite"),
-                            tags$div(textOutput("pokeDescription"), 
-                                     class="poke-desctiption",
-                                     height="45vh")
+                            textOutput("pokeDescription")
                         )
                     )
                 )
             ),
             box(
                 width=12,
-                title="Pokemon inside selection",
+                title="Pokemon inside selection (use Box-select or Lasso-select in scatter)",
                 DT::DTOutput("pokeTable")
             )
         ),
@@ -130,6 +130,36 @@ shinyUI(dashboardPage(skin="black",
                     plotlyOutput("linePlot")
                   )
               )
+        ),
+        tabItem(tabName="teamBuilder",
+            fluidPage(
+                column(
+                    width=4,
+                    box(
+                        title="Available Pokemon",
+                        width=12,
+                        DT::DTOutput("pokePickerTable"),
+                        actionButton("addToTeamButton", "Add to Team"),
+                    )
+                ),
+                column(
+                    width=4,
+                    box(
+                        title="Current Team (max 6 members)",
+                        width=12,
+                        DT::DTOutput("pokeTeamTable"),
+                        actionButton("removeFromTeamButton", "Remove from Team")
+                    )
+                ),
+                column(
+                    width=4,
+                    box(
+                        title="Pokemon type distribution",
+                        width=12,
+                        plotlyOutput("teamTypePiechart")
+                    )
+                )
+            )
         )
     )
 )))

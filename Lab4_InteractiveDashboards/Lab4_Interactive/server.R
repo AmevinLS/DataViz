@@ -15,8 +15,19 @@ library(plotly)
 library(scales)
 
 raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
+raw_pokedex = raw_pokedex %>%
+    mutate(is_legendary=if_else(is_legendary==1, "Yes", "No"),
+           is_mythical=if_else(is_mythical==1, "Yes", "No"),
+           is_sublegendary=if_else(is_sublegendary==1, "Yes", "No"))
+
+types_colors = read.csv("data/types_colors.csv", sep=",")
+types_colors = setNames(types_colors$color, types_colors$type)
+
+scatter_pokedex = raw_pokedex %>%
+    select(everything())
 pokedex = raw_pokedex %>%
-    select(national_number, gen, english_name, primary_type, secondary_type)
+    select(national_number, gen, english_name, primary_type, secondary_type, 
+           abilities_0, abilities_1)
 all_types = unique(pokedex$primary_type)
 
 df_types_stats <- raw_pokedex %>% 
@@ -54,19 +65,6 @@ shinyServer(function(input, output) {
     selected_natId = reactive({
         curr_table()[input$pokeTable_rows_selected, "national_number"]
     })
-    
-    
-    output$distPlot <- renderPlot({
-
-        x = seq(0, 10, length.out=1000)
-        dist_val = dnorm(x, mean=input$mean, sd=input$std)
-        data = data.frame(x, dist_val)
-        
-        ggplot(data, aes(x=x, y=dist_val)) +
-          geom_line() +
-          theme_bw()
-
-    })
 
     output$histPlot = renderPlot({
         gens = input$genPicker
@@ -100,11 +98,21 @@ shinyServer(function(input, output) {
         curr_table()
     }, options=list(
         scrollX=TRUE,
-        scrollY="130",
+        scrollY="300",
         paging=FALSE,
         autowidth=TRUE
     ), selection="single"
     )
+    
+    output$pokeName = renderText({
+        natId = selected_natId()
+        if (length(natId) > 0) {
+            raw_pokedex[raw_pokedex$national_number==natId, "english_name"]
+        }
+        else {
+            ""
+        }
+    })
     
     output$sprite = renderUI({
         natId = selected_natId()
@@ -127,9 +135,90 @@ shinyServer(function(input, output) {
     })
     
     output$pokeScatter = renderPlotly({
-        scatter = ggplot(raw_pokedex, aes(x=hp, y=attack, color=factor(is_legendary))) +
+        scatter = ggplot(scatter_pokedex, aes_string(x=input$x_axis, y=input$y_axis, color=input$hue, text="english_name")) +
             geom_jitter(width=5, height=5) +
             theme_bw()
-        ggplotly(scatter, source="S")
+        scatter = ggplotly(scatter, source="S")#, tooltip=c("text", "x", "y", "color"))
+        scatter
+    })
+    
+    
+    ### TeamBuilder Tab
+    
+    cols_for_teampicker = c("national_number", "gen", "english_name")
+    cols_for_team = c("national_number", "english_name")
+    
+    curr_team = reactiveVal(
+        raw_pokedex %>%
+            select(national_number) %>%
+            filter(FALSE)
+    )
+    curr_team_table = reactive({
+        raw_pokedex %>%
+            inner_join(curr_team(), by="national_number", multiple="all") %>%
+            select(one_of(cols_for_team))
+    })
+    
+    
+    observeEvent(input$addToTeamButton, {
+        if (nrow(curr_team()) < 6) {
+            new_pokemon = raw_pokedex[input$pokePickerTable_rows_selected, "national_number"]
+            new_team = rbind(curr_team(), data.frame(national_number=new_pokemon))
+            curr_team(new_team)
+        }        
+    })    
+    
+    observeEvent(input$removeFromTeamButton, {
+        selected_member = input$pokeTeamTable_rows_selected
+        selected_natId = curr_team_table()[selected_member, "national_number"]
+        if (length(selected_member) > 0) {
+            ind = which(curr_team()$national_number == selected_natId)[1]
+            new_team = curr_team()[-ind, , drop=FALSE]
+            curr_team(new_team)
+        }
+    })
+    
+    
+    output$pokePickerTable = DT::renderDataTable({
+        res = raw_pokedex %>%
+            select(one_of(cols_for_teampicker)) %>%
+            rename(nat_num = national_number)
+        res
+        
+    }, options=list(
+        scrollX=TRUE,
+        scrollY="300",
+        paging=FALSE,
+        autowidth=TRUE
+    ), selection="single")
+    
+    output$pokeTeamTable = DT::renderDataTable({
+        curr_team_table() %>%
+            rename(nat_num = national_number)
+    }, options=list(
+        scrollX=TRUE,
+        scrollY="300",
+        paging=FALSE,
+        autowidth=TRUE,
+        searching=FALSE
+    ), selection="single")
+    
+    
+    output$teamTypePiechart = renderPlotly({
+        if (nrow(curr_team()) > 0) {
+            type_counts = raw_pokedex %>%
+                inner_join(curr_team(), by="national_number", multiple="all") %>%
+                select(primary_type, secondary_type) %>%
+                pivot_longer(cols=everything(), names_to="type_col", values_to="type") %>%
+                count(type, sort=TRUE) %>%
+                filter(type != "")
+            
+            curr_colors = unname(types_colors[type_counts$type])
+            pie = plot_ly(type_counts, labels=~type, values=~n, type="pie",
+                          marker=list(colors=curr_colors,
+                                      line=list(color="#FFFFFF", width=1)),
+                          insidetextfont=list(color="#FFFFFF"))
+            pie
+        }
     })
 })
