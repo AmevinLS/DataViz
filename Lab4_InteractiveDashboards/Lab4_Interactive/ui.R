@@ -28,7 +28,7 @@ shinyUI(dashboardPage(skin="black",
             menuItem("Pokemon picker", tabName="pokemon_picker",
                      menuItem("Datatable", tabName="datatable"),
                      menuItem("Paremeters", tabName="parameters",
-                              selectInput("x_axis", "X Axis", 
+                              selectInput("x_axis", "X Axis",
                                           choice=x_choices,
                                           selected=x_selected),
                               selectInput("y_axis", "Y Axis",
@@ -40,7 +40,8 @@ shinyUI(dashboardPage(skin="black",
                     )
             ),
             menuItem("Compare types", tabName="typeComparer"),
-            menuItem("Build Your Team", tabName="teamBuilder")
+            menuItem("Build Your Team", tabName="teamBuilder"),
+            menuItem("Questionaire", tabName="questionaire")
         )
     ),
     dashboardBody(class="custom-dashboard-body",
@@ -52,14 +53,14 @@ shinyUI(dashboardPage(skin="black",
             width: 100% !important;
             max-width: none !important;
             }
-        ')  
+        ')
     ),
-    
+
     tabItems(
         tabItem(tabName="genHist",
              sidebarLayout(
                  sidebarPanel(
-                     checkboxGroupInput("genPicker", "Generations:",
+                     checkboxGroupInput("genPicker", "Choose generations:",
                                         c("I"="I",
                                           "II"="II",
                                           "III"="III",
@@ -122,8 +123,8 @@ shinyUI(dashboardPage(skin="black",
                                          "normal"="normal",
                                          "poison"="poison",
                                          "psychic"="psychic",
-                                         "steel"="steel",
                                          "rock"="rock",
+                                         "steel"="steel",
                                          "water"="water"))
                   ),
                   mainPanel(
@@ -160,6 +161,25 @@ shinyUI(dashboardPage(skin="black",
                     )
                 )
             )
-        )
+        ),
+        tabItem(tabName="questionaire",
+                sidebarLayout(
+                  sidebarPanel(
+                    radioButtons("topBot", "Mode:", c("top N pokemons"="top",
+                                                      "bottom N pokemons"="bottom")),
+                    numericInput("n", "N", value=10, min=1, max=900, step=1),
+                    selectInput("attrib", "Attribute:", c('health'='hp',
+                                                          'attack'='attack',
+                                                          'speed'='speed',
+                                                          'defense'='defense',
+                                                          'speed attack'='speed attack',
+                                                          'speed defense'='speed defense',
+                                                          'weight'='weight (kg)'))
+                  ),
+                  mainPanel(
+                    style = "height: 90vh; overflow-y: auto;",
+                    tableOutput('tabList')
+                  )
+                )
     )
-)))
+))))
