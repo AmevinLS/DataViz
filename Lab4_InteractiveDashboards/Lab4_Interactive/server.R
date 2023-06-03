@@ -64,19 +64,6 @@ shinyServer(function(input, output) {
     selected_natId = reactive({
         curr_table()[input$pokeTable_rows_selected, "national_number"]
     })
-    
-    
-    output$distPlot <- renderPlot({
-
-        x = seq(0, 10, length.out=1000)
-        dist_val = dnorm(x, mean=input$mean, sd=input$std)
-        data = data.frame(x, dist_val)
-        
-        ggplot(data, aes(x=x, y=dist_val)) +
-          geom_line() +
-          theme_bw()
-
-    })
 
     output$histPlot = renderPlot({
         gens = input$genPicker
