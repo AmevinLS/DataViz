@@ -13,17 +13,19 @@ library(dplyr)
 library(tidyr)
 library(plotly)
 library(scales)
+library(circlize)
 
 raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
 pokedex = raw_pokedex %>%
     select(national_number, gen, english_name, primary_type, secondary_type)
-all_types = unique(pokedex$primary_type)
+
+df_types = read.csv('data/types_colors.csv')
+
+all_types = df_types$type
 
 df_pokemons <- raw_pokedex %>%
   select(c('english_name', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense', 'weight_kg')) %>%
   rename('name'='english_name', 'weight (kg)'='weight_kg', 'speed defense'='sp_defense', 'speed attack'='sp_attack')
-
-View(df_pokemons)
 
 df_types_stats <- raw_pokedex %>% 
   select(c('gen', 'primary_type', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense'))
@@ -45,6 +47,10 @@ df_types_stats <- df_types_stats %>%
   pivot_longer(cols=c('hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense'),
                names_to='feature',
                values_to='value')
+
+df_types_only <- raw_pokedex %>%
+  select('primary_type', 'secondary_type')
+
 
 # Define server logic
 shinyServer(function(input, output) {
@@ -105,10 +111,15 @@ shinyServer(function(input, output) {
         chosen_types = df_types_stats %>%
           filter(primary_type %in% types)
         
+        colors <- df_types %>%
+          filter(type %in% types) %>%
+          select('color')
+        
+        print(colors$color)
         
         g <- ggplot(chosen_types, 
                     aes(x=feature, 
-                        y=value, 
+                        y=value,
                         group=primary_type,
                         text=paste(feature, ": ", round(value, 2), "\n", 
                                    primary_type, sep=''))) +
