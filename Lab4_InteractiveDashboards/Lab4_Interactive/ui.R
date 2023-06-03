@@ -73,7 +73,7 @@ shinyUI(dashboardPage(skin="black",
                                           "VIII"="VIII"))
                  ),
                  mainPanel(
-                     plotlyOutput("histPlot")
+                     plotOutput("histPlot")
                  )
              )
         ),
@@ -135,13 +135,18 @@ shinyUI(dashboardPage(skin="black",
         tabItem(tabName="questionaire",
                 sidebarLayout(
                   sidebarPanel(
-                    radioButtons("topBot", "Mode:", c("top"="top",
-                                                      "bot"="bottom")),
+                    radioButtons("topBot", "Mode:", c("top 10"="top",
+                                                      "bottom 10"="bottom")),
                     selectInput("attrib", "Attribute:", c('health'='hp',
-                                                          'gaga'='lada'))
+                                                          'attack'='attack',
+                                                          'speed'='speed',
+                                                          'defense'='defense',
+                                                          'speed attack'='sp_attack',
+                                                          'speed defense'='sp_defense', 
+                                                          'weight'='weight_kg'))
                   ),
                   mainPanel(
-                    
+                    tableOutput('tabList')
                   )
                 )
     )

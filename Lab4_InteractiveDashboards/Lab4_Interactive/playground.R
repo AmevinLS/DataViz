@@ -4,15 +4,12 @@ library(dplyr)
 
 pokedex = read.csv("data/pokemon.csv", sep="\t")
 
-gens = c("I", "III")
+df_pokemons <- raw_pokedex %>%
+  select(c('english_name', 'hp', 'attack', 'speed', 'defense', 'sp_attack', 'sp_defense', 'weight_kg'))
 
-chosen_poke = pokedex %>%
-    filter(gen %in% gens)    
+df_subset <- df_pokemons %>%
+  select(c('english_name', 'attack')) %>%
+  top_n(10, 'attack') %>%
+  arrange(!!sym('attack'))
 
-pokedex[national_number==3, "english_name"]
-
-length(pokedex[c(), "national_number"])
-pokedex[c(), "national_number"]
-
-all_types = unique(pokedex$primary_type)
-all_types
+View(df_subset)
