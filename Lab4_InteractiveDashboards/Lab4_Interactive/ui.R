@@ -41,7 +41,7 @@ shinyUI(dashboardPage(skin="black",
             ),
             menuItem("Compare types", tabName="typeComparer"),
             menuItem("Build Your Team", tabName="teamBuilder"),
-            menuItem("Questionaire", tabName="questionaire")
+            menuItem("Ranking", tabName="ranking")
         )
     ),
     dashboardBody(class="custom-dashboard-body",
@@ -162,7 +162,7 @@ shinyUI(dashboardPage(skin="black",
                 )
             )
         ),
-        tabItem(tabName="questionaire",
+        tabItem(tabName="ranking",
                 sidebarLayout(
                   sidebarPanel(
                     radioButtons("topBot", "Mode:", c("top N pokemons"="top",
