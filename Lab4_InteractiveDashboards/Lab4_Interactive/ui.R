@@ -9,7 +9,7 @@
 
 library(plotly)
 library(shiny)
-library(shinytitle)
+# library(shinytitle)
 library(shinydashboard)
 library(plotly)
 
@@ -23,7 +23,11 @@ hue_selected = "is_legendary"
 
 shinyUI(
   dashboardPage(title="Pokemon Stuff!",
-    dashboardHeader(title=span("Pokemon Stuff!", style="font-family: RowdyLight, sans-serif;")),
+    dashboardHeader(title=span("Pokemon Stuff!",
+                          style="font-family: RowdyLight, sans-serif;"),
+                    tags$li(class = "dropdown",
+                            tags$img(height = "20px", alt="University Logo", src="images/logo.jpg")
+                    )),
     dashboardSidebar(
         sidebarMenu(
             menuItem("Generations Histogram", tabName="genHist"),
@@ -47,8 +51,7 @@ shinyUI(
         )
     ),
     dashboardBody(class="custom-dashboard-body",
-    # includeCSS("www/darkly.min.css"),
-    includeCSS("www/custom.css"),
+                  includeCSS("www/custom.css"),
     tags$style(
         HTML('
             .dataTables_wrapper {
