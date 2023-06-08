@@ -21,7 +21,7 @@ y_selected = "attack"
 hue_selected = "is_legendary"
 
 shinyUI(dashboardPage(skin="black",
-    dashboardHeader(title="Pokemon Stuff!"),
+    dashboardHeader(title=span("Pokemon Stuff!", style="font-family: RowdyLight, sans-serif;")),
     dashboardSidebar(
         sidebarMenu(
             menuItem("Generations Histogram", tabName="genHist"),

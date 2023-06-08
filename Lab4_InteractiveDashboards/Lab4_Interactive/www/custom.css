@@ -1,3 +1,48 @@
+@font-face {
+    font-family: 'HappySchool';
+    src: url("fonts/Happy School.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SimpleTfb';
+    src: url("fonts/Simple tfb.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GeometrySoft';
+    src: url("fonts/Geometry\ Soft\ Pro-Bold\ N.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TypoGraphica';
+    src: url("fonts/TypoGraphica_demo.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'RowdyLight';
+    src: url("fonts/Rowdy-Light.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body {
+    font-family: 'RowdyLight', sans-serif;
+}
+
+
+.skin-black .main-header .logo .logo-text {
+    font-family: 'RowdyLight', sans-serif;
+}
+
 .center {
     display: block;
     margin-left: auto;
@@ -12,7 +57,11 @@
 }
 
 .box {
-    overflow-y: auto;
+    overflow-y: auto
+}
+
+.box-title {
+    font-family: 'RowdyLight', sans-serif;
 }
 
 .custom-dashboard-body {
@@ -30,8 +79,4 @@
     font-size: 23px;
     font-weight: bold;
     text-align: center;
-}
-
-body {
-    font-family: 'Roboto', sans-serif;
 }
