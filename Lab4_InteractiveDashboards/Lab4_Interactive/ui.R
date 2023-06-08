@@ -41,7 +41,8 @@ shinyUI(dashboardPage(skin="black",
             ),
             menuItem("Compare types", tabName="typeComparer"),
             menuItem("Build Your Team", tabName="teamBuilder"),
-            menuItem("Ranking", tabName="ranking")
+            menuItem("Ranking", tabName="ranking"),
+            menuItem("ABOUT", tabName="about")
         )
     ),
     dashboardBody(class="custom-dashboard-body",
@@ -140,7 +141,7 @@ shinyUI(dashboardPage(skin="black",
                         title="Available Pokemon",
                         width=12,
                         DT::DTOutput("pokePickerTable"),
-                        actionButton("addToTeamButton", "Add to Team"),
+                        actionButton("addToTeamButton", "Add to Team")
                     )
                 ),
                 column(
@@ -181,5 +182,34 @@ shinyUI(dashboardPage(skin="black",
                     tableOutput('tabList')
                   )
                 )
-    )
-))))
+        ),
+        tabItem(tabName="about",
+                column(width=12,
+                       p(strong("About the page and authors"), style="font-size:50px"),
+                       p("This interactive dashboard page was created for Pokemon enjoyers 
+                         (if you've played Pokemon Red/Blue/Yellow - MAD respect, OG)
+                         who are also 'data nerds' and enjoy feeling smart while looking at
+                         stats and plots. For your enjoyment we have:"),
+                       tags$ul(
+                           tags$li(strong("Generations Histogram", style="color:blue"), ". Explore which pokemon types were added
+                                   in each generation. Just for curiosity's sake"),
+                           tags$li(strong("Pokemon Picker", style="color:blue"), ". You can get prety much any information
+                                   for any pokemon you want. The interface is a bit unintuitive
+                                    (plot select -> table select -> pokemon info), but you have to
+                                   put some work in to get good stuff in life"),
+                           tags$li(strong("Compare types", style="color:blue"), ". In 
+                                   the games, different types of pokemon get opened to you at
+                                   different stages. To help you decide when to catch pokemon, explore which types
+                                   dominate in the stats you're looking for"),
+                           tags$li(strong("Build your team", style="color:blue"), ". If you want to test your 'build', select
+                                   the pokemon from the table and find out the type distribution of
+                                   your team and decide your type weaknesses for future success"),
+                           tags$li(strong("Ranking", style="color:blue"), ". Simple interface with limited usefulness.
+                                   This is for beta-males who want everything on a silver platter")
+                       ),
+                       p("This is a small project prepared by", tags$br(), 
+                         " - Nikita Makarevich, 153989", tags$br(), 
+                         " - Szymon Siemieniuk, 151947", style="font-style:italic"),
+                       p("You can support the authors by donating ", tags$a("HERE", href="https://youtu.be/dQw4w9WgXcQ"), style="color:deeppink")
+        )
+)))))
