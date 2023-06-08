@@ -26,7 +26,7 @@ shinyUI(
     dashboardHeader(title=span("Pokemon Stuff!",
                           style="font-family: RowdyLight, sans-serif;"),
                     tags$li(class = "dropdown",
-                            tags$img(height = "20px", alt="University Logo", src="images/logo.jpg")
+                            tags$img(height="45px", alt="University Logo", src="logo.png")
                     )),
     dashboardSidebar(
         sidebarMenu(
