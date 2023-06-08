@@ -117,7 +117,7 @@ shinyServer(function(input, output) {
     output$linePlot = renderPlotly({
       types = input$typePicker
       if (length(types) == 0) {
-        ggplotly()
+        NULL
       } else {
         chosen_types = df_types_stats %>%
           filter(primary_type %in% types)
