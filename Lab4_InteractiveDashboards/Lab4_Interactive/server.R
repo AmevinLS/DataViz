@@ -79,11 +79,6 @@ for (row in 1:nrow(df_types_only)) {
 
 set.seed(1000)
 
-# View(df_types_only)
-
-# chordDiagram(m1)
-  
-
 # Define server logic
 shinyServer(function(input, output) {
 
@@ -170,23 +165,6 @@ shinyServer(function(input, output) {
       df_selected <- df_types_only %>%
         filter(primary_type %in% types) %>%
         filter(secondary_type %in% types)
-      
-      # View(df_selected)
-      
-      # N <- length(input$typePicker)
-      # m1 <- matrix(0, N, N)
-      
-      # rownames(m1) <- input$typePIcker
-      # colnames(m1) <- input$typePicker
-      
-      #for (row in 1:nrow(df_selected)) {
-       # word = df_selected[row, 'primary_type']
-        #i_1 = which(all_types == word)
-        #word = df_selected[row, 'secondary_type']
-        #i_2 = which(all_types == word)
-        #print(paste(i_1, ' ', i_2))
-        #m1[i_1, i_2] = m1[i_1, i_2] + 1
-      #}
       
       if (nrow(df_selected) > 0) {
         chordDiagram(df_selected)
