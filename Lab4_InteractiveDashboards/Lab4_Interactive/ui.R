@@ -134,7 +134,8 @@ shinyUI(
                                          "water"="water"))
                   ),
                   mainPanel(
-                    plotlyOutput("linePlot")
+                    plotlyOutput("linePlot"),
+                    plotOutput("chordDiagram")
                   )
               )
         ),

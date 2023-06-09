@@ -5,15 +5,13 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(plotly)
 library(scales)
-library(circlize)
+suppressPackageStartupMessages(library(circlize))
 
 raw_pokedex = read.csv("data/pokemon.csv", sep="\t")
 raw_pokedex = raw_pokedex %>%
@@ -26,6 +24,7 @@ types_colors = setNames(types_colors$color, types_colors$type)
 
 scatter_pokedex = raw_pokedex %>%
     select(everything())
+
 pokedex = raw_pokedex %>%
     select(national_number, gen, english_name, primary_type, secondary_type,
            abilities_0, abilities_1)
@@ -60,8 +59,30 @@ df_types_stats <- df_types_stats %>%
                values_to='value')
 
 df_types_only <- raw_pokedex %>%
-  select('primary_type', 'secondary_type')
+  select('primary_type', 'secondary_type') %>%
+  filter(secondary_type != '')
+  
+N = length(all_types)
 
+m1 = matrix(0, N, N)
+
+rownames(m1) = all_types
+colnames(m1) = all_types
+
+for (row in 1:nrow(df_types_only)) {
+  word = df_types_only[row, 'primary_type']
+  i_1 = which(all_types == word)
+  word = df_types_only[row, 'secondary_type']
+  i_2 = which(all_types==word)
+  m1[i_1, i_2] = m1[i_1, i_2] + 1
+}
+
+set.seed(1000)
+
+# View(df_types_only)
+
+# chordDiagram(m1)
+  
 
 # Define server logic
 shinyServer(function(input, output) {
@@ -115,18 +136,16 @@ shinyServer(function(input, output) {
     })
 
     output$linePlot = renderPlotly({
-      types = input$typePicker
+      types <- input$typePicker
       if (length(types) == 0) {
         NULL
       } else {
-        chosen_types = df_types_stats %>%
+        chosen_types <- df_types_stats %>%
           filter(primary_type %in% types)
 
         colors <- df_types %>%
           filter(type %in% types) %>%
           select('color')
-
-        print(colors$color)
 
         g <- ggplot(chosen_types,
                     aes(x=feature,
@@ -145,6 +164,35 @@ shinyServer(function(input, output) {
 
         ggplotly(g, tooltip="text")
       }})
+    
+    output$chordDiagram = renderPlot({
+      types <- input$typePicker
+      df_selected <- df_types_only %>%
+        filter(primary_type %in% types) %>%
+        filter(secondary_type %in% types)
+      
+      # View(df_selected)
+      
+      # N <- length(input$typePicker)
+      # m1 <- matrix(0, N, N)
+      
+      # rownames(m1) <- input$typePIcker
+      # colnames(m1) <- input$typePicker
+      
+      #for (row in 1:nrow(df_selected)) {
+       # word = df_selected[row, 'primary_type']
+        #i_1 = which(all_types == word)
+        #word = df_selected[row, 'secondary_type']
+        #i_2 = which(all_types == word)
+        #print(paste(i_1, ' ', i_2))
+        #m1[i_1, i_2] = m1[i_1, i_2] + 1
+      #}
+      
+      if (nrow(df_selected) > 0) {
+        chordDiagram(df_selected)
+        title('Chord diagram of types')
+      }
+    })
 
     output$tabList = renderTable({
       sorter <- input$topBot
